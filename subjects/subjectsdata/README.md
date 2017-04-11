@@ -1,0 +1,111 @@
+This directory contains the data from human subjects performing the visual search task described in [There's Waldo! A Normalization Model of Visual Search Predicts Single-Trial Human Fixations in an Object Search Task](https://academic.oup.com/cercor/article/26/7/3064/1745172/There-s-Waldo-A-Normalization-Model-of-Visual) (Miconi, Groomes and Kreiman, Cereb Cortex (2015) 26 (7): 3064-3082). 
+
+**IMPORTANT:** several of these files contain *incomplete* or *buggy* data.
+They are included partly for completeness, but mostly because the analysis code
+requires the presence of some of these file for data alignment purposes (even
+though the data is not actually used for the analysis). 
+
+The list of *complete
+and correct files* (whose data is actually used in the analysis) is contained in `LISTCORRECTFILES.txt` (29 files, from 16 subjects). 
+
+
+
+Data file format
+================
+
+The files are named "ResultsSaccades_Subjectname_blkX.mat". 
+The block number is given by the X after "blk" in the filename. A "block" consists
+of a certain set of trials. Files with the same block number consist
+of the same set of trials (with the same objects and target for each
+trial), but in randomized order, and with randomized object position
+for each presentation. See below for details.
+
+Some of the files
+have a "2" after the subject's name, which indicates that the same
+subject has gone through a second session, in which the same trials
+were shown (but in a different order and randomized object position
+for each trial).
+
+I have also included the image files for the objects, as well as one
+image showing the array of objects shown for trial 1 of block 1
+(arraySub_blk1_num1.png).
+
+Each of the data files contains several variables. Some indicate
+experimental parameters. However, the main data is in the "results" cell
+array, which
+contains 440 records - one per trial. Each record contains the data
+for this particular trial, that is, the objects shown, target,
+fixation data, etc.
+
+
+The format is as follows (using file ResultsSaccades_HC_blk10.mat as
+an example):
+
+>> results{1}
+ans =
+            probes: [32 25 23 37 27 8]
+
+            target: 23
+
+         targetpos: 3
+
+    fixatedobjects: [4 5 6 1 3]
+
+    fixationstarts: [0.2286 0.4937 0.7147 0.9059 1.0943]
+
+      fixationends: [0.4856 0.7019 0.8978 1.0736]
+
+        timetofind: 1.0945
+
+         oldnumber: 200
+
+"probes" contains the IDs of the 6 objects shown in this trial. The PNG
+images of these objects are contained in the directory. The objects in
+"probes" are arranged in the clockwise order of their screen position:
+the first ID is the object located at position 30deg, the second
+object is the one at position 90deg, etc. in increments of 60 degrees.
+
+"target" is the ID of the target object. In target-present trials,
+this will be a member of the "probes" array"; in target-absent trials,
+it won't.
+
+"targetpos" is a number from 1 to 6 indicating the position of the
+target object within the probe array, and therefore on screen. In
+target-absent trials, this is set to -10, which is a way to identify
+target-absent trials.
+
+"fixatedobjects" is an array of numbers from 1 to 6 indicating
+positions of the objects that were fixated by the subject, in order of
+fixation. In this case the subject first looked at position 4
+(150deg), then at position 3 (120deg), then at position 2 (90deg, i.e.
+"full East"). NOTE: there can be repetitions in fixatedobjects, if an
+object is fixated several times.
+
+"fixationstarts" and "fixationends" contain the starting and ending
+time of each successive fixation (i.e. when the subject's gaze entered
+and left the object's bounding box area), in seconds.
+
+"timetofind" indicates how long it took the subject to locate the
+target., in seconds. If the subject never fixated the target
+(including, but not only, in target-absent trials), this is set to -1.
+
+"oldnumber" is the actual "trial number" of this trial, i.e. a unique trial ID
+given to each trial in the block. Remember that trial order is randomized for
+each presentation of a given block. For example,
+ResultsSaccades_Wendy_blk10.mat and ResultsSaccades_HC_blk10.mat contain the
+same trials, but in different order; thus results{1} contain a different trial
+(i.e. a different set of presented objects and target) in both files. However,
+looking at the "oldnumber" value, you can determine which trial each entry in
+results corresponds to.  For example, results{1} in
+ResultsSaccades_HC_blk10.mat  has oldnumber=200. In
+ResultsSaccades_Wendy_blk10.mat , we see that results{404} has the same
+oldnumber - and indeed results{1} in the first file has the same objects and
+target as results{404} in the second file (though with different spatial
+position).
+
+
+Note that the 'sequence' array in each data file also contains the real trial
+ID/oldnumber of each successive trial, in the order shown for this session. So
+results{find(sequence==X)} should return you the trial with trial ID X, in any
+file containing data from a given block.
+
